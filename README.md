@@ -90,12 +90,37 @@ pdf-to-json-benchmark/
 └── README.md
 ```
 
+## Quick Start
+
+```bash
+# 1. Install uv (fast Python package manager)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# 2. Install dependencies
+uv sync
+
+# 3. Download dataset
+uv run python download_dataset.py
+
+# 4. Run benchmark
+uv run python run_benchmark.py --samples 10
+```
+
+Or use the automated setup:
+```bash
+./quickstart.sh
+```
+
+See [INSTALL.md](INSTALL.md) for detailed instructions.
+
 ## Next Steps
 
-1. Download FinTabNet.c from Hugging Face
-2. Set up environment with required libraries
-3. Implement baseline methods (pdfplumber, Tabula)
-4. Implement deep learning methods (Table Transformer)
-5. Test LLM-based approaches
-6. Run comprehensive benchmark
-7. Analyze and visualize results
+1. ✅ Download FinTabNet.c from Hugging Face
+2. ✅ Set up environment with uv (super fast!)
+3. ✅ Implement baseline method (pdfplumber)
+4. Test on real dataset samples
+5. Implement additional methods (Tabula, Camelot)
+6. Implement deep learning methods (Table Transformer)
+7. Test LLM-based approaches
+8. Run comprehensive benchmark
+9. Analyze and visualize results

@@ -3,17 +3,32 @@
 ## Prerequisites
 
 - Python 3.8 or higher
-- pip (Python package manager)
 - Git
 - (Optional) Java for Tabula
+
+## Install uv (Fast Python Package Manager)
+
+`uv` is a blazing-fast Python package installer and resolver, written in Rust.
+
+### Linux/macOS
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+### Windows
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+After installation, restart your shell or run:
+```bash
+source $HOME/.local/bin/env  # Linux/macOS
+```
 
 ## System Dependencies
 
 ### Ubuntu/Debian
 ```bash
-# Required for Python venv
-sudo apt install python3-venv python3-pip
-
 # For Camelot (image processing)
 sudo apt install python3-tk ghostscript
 
@@ -27,7 +42,7 @@ sudo apt install git-lfs
 ### macOS
 ```bash
 # Using Homebrew
-brew install python tcl-tk ghostscript
+brew install tcl-tk ghostscript
 
 # For Tabula (optional)
 brew install java
@@ -38,30 +53,27 @@ brew install git-lfs
 
 ## Python Environment Setup
 
-### Option 1: Virtual Environment (Recommended)
+### Using uv (Recommended - Super Fast!)
+```bash
+# Install all dependencies (creates .venv automatically)
+uv sync
+
+# Or install with optional LLM dependencies
+uv sync --extra llm
+
+# Run scripts with uv
+uv run python download_dataset.py
+uv run python run_benchmark.py --samples 10
+```
+
+### Alternative: Using pip (Slower)
 ```bash
 # Create virtual environment
 python3 -m venv venv
-
-# Activate it
-source venv/bin/activate  # On Linux/macOS
-# OR
-venv\Scripts\activate     # On Windows
+source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
-```
-
-### Option 2: User Installation
-```bash
-# Install packages for current user only
-pip install --user -r requirements.txt
-```
-
-### Option 3: System-wide (Not Recommended)
-```bash
-# Install globally (requires sudo)
-sudo pip3 install -r requirements.txt
 ```
 
 ## Download Dataset
@@ -90,21 +102,24 @@ git clone https://huggingface.co/datasets/bsmock/FinTabNet.c data/fintabnet
 ## Verify Installation
 
 ```bash
-# Test imports
-python3 -c "import pdfplumber; print('✓ pdfplumber installed')"
+# Using uv
+uv run python -c "import pdfplumber; print('✓ pdfplumber installed')"
 
-# Check dataset
-python3 -c "from datasets import load_from_disk; d = load_from_disk('data/fintabnet'); print(f'✓ Dataset loaded: {len(d)} samples')"
+# Or if using venv
+python3 -c "import pdfplumber; print('✓ pdfplumber installed')"
 ```
 
 ## Quick Start
 
 ```bash
+# Download dataset
+uv run python download_dataset.py
+
 # Run a quick test (10 samples, pdfplumber only)
-python3 run_benchmark.py --samples 10
+uv run python run_benchmark.py --samples 10
 
 # Run full benchmark
-python3 run_benchmark.py --samples -1 --methods pdfplumber tabula camelot
+uv run python run_benchmark.py --samples -1 --methods pdfplumber tabula camelot
 ```
 
 ## Troubleshooting

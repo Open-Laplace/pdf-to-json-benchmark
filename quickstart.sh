@@ -1,5 +1,5 @@
 #!/bin/bash
-# Quick start script for PDF to JSON benchmark
+# Quick start script for PDF to JSON benchmark using uv
 
 set -e
 
@@ -16,34 +16,22 @@ fi
 
 echo "✓ Python $(python3 --version | cut -d' ' -f2) found"
 
-# Check if venv exists
-if [ ! -d "venv" ]; then
+# Check if uv is installed
+if ! command -v uv &> /dev/null; then
     echo ""
-    echo "Creating virtual environment..."
-    python3 -m venv venv || {
-        echo "✗ Failed to create venv. Install python3-venv:"
-        echo "  sudo apt install python3-venv"
-        exit 1
-    }
-    echo "✓ Virtual environment created"
-fi
-
-# Activate venv
-echo ""
-echo "Activating virtual environment..."
-source venv/bin/activate
-
-# Install dependencies
-if [ ! -f "venv/.installed" ]; then
-    echo ""
-    echo "Installing dependencies (this may take a few minutes)..."
-    pip install --upgrade pip wheel
-    pip install -r requirements.txt
-    touch venv/.installed
-    echo "✓ Dependencies installed"
+    echo "uv not found. Installing uv (fast Python package manager)..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="$HOME/.local/bin:$PATH"
+    echo "✓ uv installed"
 else
-    echo "✓ Dependencies already installed"
+    echo "✓ uv $(uv --version | cut -d' ' -f2) found"
 fi
+
+# Install dependencies using uv
+echo ""
+echo "Installing dependencies with uv (this is fast!)..."
+uv sync
+echo "✓ Dependencies installed"
 
 # Check if dataset exists
 if [ ! -d "data/fintabnet" ]; then
@@ -54,9 +42,9 @@ if [ ! -d "data/fintabnet" ]; then
     read -p "Download now? (y/n) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        python3 download_dataset.py
+        uv run python download_dataset.py
     else
-        echo "Skipping dataset download. Run 'python3 download_dataset.py' later."
+        echo "Skipping dataset download. Run 'uv run python download_dataset.py' later."
     fi
 else
     echo "✓ Dataset found"
@@ -68,17 +56,16 @@ echo "Setup complete! You can now:"
 echo "================================================"
 echo ""
 echo "1. Run a quick test (10 samples):"
-echo "   python3 run_benchmark.py --samples 10"
+echo "   uv run python run_benchmark.py --samples 10"
 echo ""
 echo "2. Test a single PDF:"
-echo "   python3 methods/traditional/pdfplumber_extractor.py your_file.pdf"
+echo "   uv run python methods/traditional/pdfplumber_extractor.py your_file.pdf"
 echo ""
 echo "3. Run full benchmark:"
-echo "   python3 run_benchmark.py --samples -1"
+echo "   uv run python run_benchmark.py --samples -1"
 echo ""
 echo "4. Download dataset manually:"
-echo "   python3 download_dataset.py"
+echo "   uv run python download_dataset.py"
 echo ""
-echo "Remember to activate the virtual environment:"
-echo "   source venv/bin/activate"
+echo "Note: 'uv run' automatically uses the project environment!"
 echo ""
